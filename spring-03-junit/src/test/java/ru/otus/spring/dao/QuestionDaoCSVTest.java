@@ -4,29 +4,38 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.spring.domain.Question;
 import ru.otus.spring.exception.CSVParseException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
-@TestPropertySource("classpath:test-config.properties")
+@ExtendWith(MockitoExtension.class)
 class QuestionDaoCSVTest {
 
-    @Autowired
-    ParserConfigCSV parserConfig;
+    @Mock
+    private ParserConfigCSV parserConfig;
 
-    private static final int CSV_LINES_SIZE = 7;
     private static final int FIXED_ANSWER_OPTIONS_COUNT = 4;
+
+    private void initFull(){
+        given(parserConfig.getDelimiter()).willReturn('[');
+        given(parserConfig.getQuestionFilePath()).willReturn("test_questions_junit.csv");
+        given(parserConfig.getQuestionAskQty()).willReturn(5);
+        given(parserConfig.getQuestionColumnIdx()).willReturn(0);
+        given(parserConfig.getCorrectAnswerColumnIdx()).willReturn(1);
+        given(parserConfig.getFirstQuestionColumnIdx()).willReturn(2);
+    }
 
     @DisplayName("Должен распарсить корректный CSV-файл с вопросами")
     @Test
     void shouldParseCorrectCsvFile(){
+        initFull();
         QuestionDaoCSV questionDaoCSV = new QuestionDaoCSV(parserConfig);
         List<Question> questionList = questionDaoCSV.getQuestions();
 
@@ -44,27 +53,21 @@ class QuestionDaoCSVTest {
     @DisplayName("Должна быть выброшена ошибка, если CSV-файл с вопросами не найден")
     @Test
     void shoundThrowExceptionOnEmptyFilePath(){
-        String filePath = parserConfig.getQuestionFilePath();
-        parserConfig.setQuestionFilePath("error_path");
-
+        given(parserConfig.getQuestionFilePath()).willReturn("error_file");
         QuestionDaoCSV questionDaoCSV = new QuestionDaoCSV(parserConfig);
         assertThrows(CSVParseException.class, questionDaoCSV::getQuestions);
-        parserConfig.setQuestionFilePath(filePath);
     }
 
     @DisplayName("Должна быть выброшена ошибка, если путь к CSV-файлу не задан")
     @Test
     void shoundThrowExceptionOnNotFoundCSVFile(){
-        String filePath = parserConfig.getQuestionFilePath();
-        parserConfig.setQuestionFilePath("");
+        given(parserConfig.getQuestionFilePath()).willReturn("");
 
         QuestionDaoCSV questionDaoCSV = new QuestionDaoCSV(parserConfig);
         assertThrows(CSVParseException.class, questionDaoCSV::getQuestions);
 
-        parserConfig.setQuestionFilePath(null);
+        given(parserConfig.getQuestionFilePath()).willReturn(null);
         assertThrows(CSVParseException.class, questionDaoCSV::getQuestions);
-
-        parserConfig.setQuestionFilePath(filePath);
     }
 
 }

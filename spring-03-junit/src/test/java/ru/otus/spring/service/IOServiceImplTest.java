@@ -9,11 +9,12 @@ import java.io.PrintStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class IOServiceImplTest {
     private static final String IN_MESSAGE = "test_in_message";
     private static final String OUT_MESSAGE = "test_out_message";
@@ -33,8 +34,7 @@ class IOServiceImplTest {
     @DisplayName("Должны вывести сообщение в консоль")
     @Test
     void shouldDisplayOutMessage(){
-        System.setOut(new PrintStream(outputStreamCaptor));
-        IOServiceImpl ioService = new IOServiceImpl(System.out, new BufferedInputStream(System.in));
+        IOServiceImpl ioService = new IOServiceImpl(new PrintStream(outputStreamCaptor), new BufferedInputStream(System.in));
         ioService.out(OUT_MESSAGE);
         assertThat(outputStreamCaptor.toString().trim()).hasToString(OUT_MESSAGE);
     }
@@ -42,10 +42,7 @@ class IOServiceImplTest {
     @DisplayName("Должнен принять в обработку входящее сообщение")
     @Test
     void shouldConsumeInMessage() {
-        ByteArrayInputStream in = new ByteArrayInputStream(IN_MESSAGE.getBytes());
-        System.setIn(in);
-
-        IOServiceImpl ioService = new IOServiceImpl(System.out, new BufferedInputStream(System.in));
+        IOServiceImpl ioService = new IOServiceImpl(System.out, new BufferedInputStream(new ByteArrayInputStream(IN_MESSAGE.getBytes())));
         assertThat(ioService.readLine()).isEqualTo(IN_MESSAGE);
     }
 }

@@ -1,12 +1,16 @@
 package ru.otus.spring.dao;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @PropertySource("classpath:config.properties")
 public class ParserConfigCSV implements ParserConfig {
     @Value("${questionfile.path}")

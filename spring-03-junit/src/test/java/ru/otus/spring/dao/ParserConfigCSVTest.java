@@ -3,17 +3,11 @@ package ru.otus.spring.dao;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
-@TestPropertySource("classpath:test-config.properties")
 class ParserConfigCSVTest {
-    @Autowired
     private ParserConfig parserConfig;
 
     private static final char DELIMITER = '[';
@@ -27,6 +21,15 @@ class ParserConfigCSVTest {
     @DisplayName("Должны вернуться корректные параметры для чтения файла CSV")
     @Test
     void shouldReturnCorrectParamsForCSVParsing(){
+        ParserConfigCSV parserConfig = ParserConfigCSV.builder()
+                .csvDelimiter(DELIMITER)
+                .correctAnswerColumnIdx(ANSWER_COLUMN_IDX)
+                .questionFilePath(QUESTION_FILE_PATH)
+                .questionColumnIdx(QUESTION_COLUMN_IDX)
+                .questionAskQty(QUESTION_ASK_QTY)
+                .firstQuestionColumnIdx(FIRST_QUESTUON_COLUMN_IDX).build();
+
+
         assertAll(
                 () ->assertThat(parserConfig.getDelimiter()).isEqualTo(DELIMITER),
                 () ->assertThat(parserConfig.getCorrectAnswerColumnIdx()).isEqualTo(ANSWER_COLUMN_IDX),

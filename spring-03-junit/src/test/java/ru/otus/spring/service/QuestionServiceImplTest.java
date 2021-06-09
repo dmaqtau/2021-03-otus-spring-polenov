@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,73 +95,19 @@ class QuestionServiceImplTest {
     @DisplayName("Должны успешно пройти тест при должном количестве правильных ответов")
     @Test
     void shouldPassExam() throws IOException {
-        List<Question> questions = List.of(
-                createQuestion(1, 1),
-                createQuestion(2, 0),
-                createQuestion(3, 2)
-        );
-        given(questionDao.getQuestions()).willReturn(questions);
-        given(questionConfig.getPassAnswerQty()).willReturn(questions.size() - 1);
-
-        when(ioService.readLine())
-                .thenReturn("2")      // Отвечаем верно
-                .thenReturn("1")      // Отвечаем верно
-                .thenReturn("2");     // Отвечаем неверно
-
-        questionService.startStudentExamination();
-
-        verify(ioService, times(questions.size() + 1)).out(outArgCaptor.capture());
-
-        List<String> outputs = outArgCaptor.getAllValues();
-        assertThat(outputs.get(questions.size())).contains("You have passed the exam");
+        testPassExam(ExpectedPassResult.PASS);
     }
 
     @DisplayName("Должны успешно пройти тест с отличием, если все ответы правильные")
     @Test
     void shouldPerfectlyPassExam() throws IOException {
-        List<Question> questions = List.of(
-                createQuestion(1, 1),
-                createQuestion(2, 0),
-                createQuestion(3, 2)
-        );
-        given(questionDao.getQuestions()).willReturn(questions);
-        given(questionConfig.getPassAnswerQty()).willReturn(questions.size() - 1);
-
-        when(ioService.readLine())
-                .thenReturn("2")      // Отвечаем верно
-                .thenReturn("1")      // Отвечаем верно
-                .thenReturn("3");     // Отвечаем верно
-
-        questionService.startStudentExamination();
-
-        verify(ioService, times(questions.size() + 1)).out(outArgCaptor.capture());
-
-        List<String> outputs = outArgCaptor.getAllValues();
-        assertThat(outputs.get(questions.size())).contains("You have perfectly passed the exam");
+        testPassExam(ExpectedPassResult.PASS_PERFECT);
     }
 
     @DisplayName("Должны провалить тест, если правильных ответов менее, чем необходимое кол-во")
     @Test
     void shouldFailExam() throws IOException {
-        List<Question> questions = List.of(
-                createQuestion(1, 1),
-                createQuestion(2, 0),
-                createQuestion(3, 2)
-        );
-        given(questionDao.getQuestions()).willReturn(questions);
-        given(questionConfig.getPassAnswerQty()).willReturn(questions.size() - 1);
-
-        when(ioService.readLine())
-                .thenReturn("2")      // Отвечаем верно
-                .thenReturn("2")      // Отвечаем неверно
-                .thenReturn("2");     // Отвечаем неверно
-
-        questionService.startStudentExamination();
-
-        verify(ioService, times(questions.size() + 1)).out(outArgCaptor.capture());
-
-        List<String> outputs = outArgCaptor.getAllValues();
-        assertThat(outputs.get(questions.size())).contains("You have NOT passed the exam");
+        testPassExam(ExpectedPassResult.FAIL);
     }
 
     @DisplayName("Должно выдаваться сообщение о некорректном выборе опции ответа")
@@ -206,5 +152,42 @@ class QuestionServiceImplTest {
                         new AnswerOption(2, "test_answer_option_3"),
                         new AnswerOption(3, "test_answer_option_4")
                 )).build();
+    }
+
+    private void testPassExam(ExpectedPassResult expectedPassResult) throws IOException {
+        List<Question> questions = List.of(
+                createQuestion(1, 1),
+                createQuestion(2, 0),
+                createQuestion(3, 2)
+        );
+        given(questionDao.getQuestions()).willReturn(questions);
+        given(questionConfig.getPassAnswerQty()).willReturn(questions.size() - 1);
+
+        when(ioService.readLine())
+                .thenReturn(ExpectedPassResult.FAIL.equals(expectedPassResult) ? "1": "2")
+                .thenReturn(ExpectedPassResult.PASS_PERFECT.equals(expectedPassResult) ||
+                        ExpectedPassResult.PASS.equals(expectedPassResult) ? "1" : "2")
+                .thenReturn(ExpectedPassResult.PASS_PERFECT.equals(expectedPassResult) ? "3" : "1");
+
+        questionService.startStudentExamination();
+
+        // Шапка-приветствие + questions.size() вопросов +
+        verify(ioService, times(questions.size() + 1)).out(outArgCaptor.capture());
+
+        List<String> outputs = outArgCaptor.getAllValues();
+        assertThat(outputs.get(questions.size())).contains(expectedPassResult.getExpectedOutput());
+    }
+
+    @Getter
+    private enum ExpectedPassResult{
+        PASS("You have passed the exam"),
+        PASS_PERFECT("You have perfectly passed the exam"),
+        FAIL("You have NOT passed the exam");
+
+        private String expectedOutput;
+
+        ExpectedPassResult(String expectedOutput){
+            this.expectedOutput = expectedOutput;
+        }
     }
 }
