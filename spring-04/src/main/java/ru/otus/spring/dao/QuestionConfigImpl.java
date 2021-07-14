@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class QuestionConfigImpl implements QuestionConfig {
-    int qualifyAnswerQty;
+    private int qualifyAnswerQty;
 
     public QuestionConfigImpl(@Value("${answer.qualify.qty}") int qualifyAnswerQty){
         this.qualifyAnswerQty = qualifyAnswerQty;

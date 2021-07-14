@@ -1,48 +1,57 @@
 package ru.otus.spring.service;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 
-@SpringBootTest(properties = {
-        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
-})
+@SpringBootTest
 class IOServiceImplTest {
+    @MockBean
+    private PrintStream mockedPrintStream;
+    @Autowired
+    private IOServiceImpl ioService;
+
     private static final String IN_MESSAGE = "test_in_message";
     private static final String OUT_MESSAGE = "test_out_message";
 
+    private static InputStream standardIn = System.in;
 
-    private final PrintStream standardOut = System.out;
-    private final InputStream standardIn = System.in;
+    private InputStream mockedInputStream = new ByteArrayInputStream(IN_MESSAGE.getBytes());
 
-    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+    @BeforeAll
+    static void init(){
+        InputStream mockedInputStream = new ByteArrayInputStream(IN_MESSAGE.getBytes());
+        System.setIn(mockedInputStream);
+    }
+
+    @AfterAll
+    static void tearDown(){
+        System.setIn(standardIn);
+    }
 
     @DisplayName("Должны вывести сообщение в консоль")
     @Test
     void shouldDisplayOutMessage(){
-        IOServiceImpl ioService = new IOServiceImpl(new PrintStream(outputStreamCaptor), new BufferedInputStream(System.in));
         ioService.out(OUT_MESSAGE);
-        assertThat(outputStreamCaptor.toString().trim()).hasToString(OUT_MESSAGE);
+        verify(mockedPrintStream).println(OUT_MESSAGE);
     }
 
     @DisplayName("Должнен принять в обработку входящее сообщение")
     @Test
-    void shouldConsumeInMessage() {
-        IOServiceImpl ioService = new IOServiceImpl(System.out, new BufferedInputStream(new ByteArrayInputStream(IN_MESSAGE.getBytes())));
+    void shouldConsumeInMessage() throws IOException {
+        System.setIn(mockedInputStream);
         assertThat(ioService.readLine()).isEqualTo(IN_MESSAGE);
     }
 }
