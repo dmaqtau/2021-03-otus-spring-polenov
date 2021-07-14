@@ -1,6 +1,5 @@
 package ru.otus.spring.service;
 
-public interface QuestionService {
+public interface ExamService {
     void startStudentExamination();
-    String about();
 }

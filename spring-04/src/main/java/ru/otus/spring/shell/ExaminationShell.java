@@ -3,20 +3,22 @@ package ru.otus.spring.shell;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.otus.spring.service.QuestionService;
+import ru.otus.spring.service.AboutAppService;
+import ru.otus.spring.service.ExamService;
 
 @ShellComponent
 @RequiredArgsConstructor
 public class ExaminationShell {
-    private final QuestionService questionService;
+    private final ExamService examService;
+    private final AboutAppService aboutAppService;
 
     @ShellMethod(key = "about", value = "About current application")
-    public String about(){
-        return questionService.about();
+    String about(){
+        return aboutAppService.getAboutAppMessage();
     }
 
     @ShellMethod(key = "start", value = "Start the examination")
-    public void startStudentExamination(){
-        questionService.startStudentExamination();
+    void startStudentExamination(){
+        examService.startStudentExamination();
     }
 }

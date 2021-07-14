@@ -24,7 +24,15 @@ spring:
     basename: i18n/messages
     encoding: windows-1251
 
+
+  shell:
+    interactive:
+      enabled: false
+    script:
+      spring:
+        shell:
+          script: false
+
 locale:
   default:
-
 
