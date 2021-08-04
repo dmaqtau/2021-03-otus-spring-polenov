@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
@@ -20,13 +20,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.otus.spring.shell.BookShellCommands.getBookInfo;
 
 @DisplayName("Тестирование сервиса BookShellCommands")
 @SpringBootTest
 class BookShellCommandsTest {
-    @Mock
+    @MockBean
     private BookService bookService;
-    @InjectMocks
+    @Autowired
     BookShellCommands bookShellCommands;
 
     private static final String EXISTING_BOOK_NAME = "existing_book_name";
@@ -127,7 +128,7 @@ class BookShellCommandsTest {
         given(bookService.getByID(anyLong())).willReturn(existingBook);
         String result = bookShellCommands.getById(EXISTING_BOOK_ID);
         verify(bookService).getByID(EXISTING_BOOK_ID);
-        assertThat(result).contains(String.format(BookShellCommands.FOUND_BOOK_BY_ID_TEMPLATE, EXISTING_BOOK_ID, existingBook.toString()));
+        assertThat(result).contains(String.format(BookShellCommands.FOUND_BOOK_BY_ID_TEMPLATE, EXISTING_BOOK_ID,  getBookInfo(existingBook)));
 
         given(bookService.getByID(anyLong())).willReturn(null);
         result = bookShellCommands.getById(NOT_EXISTING_BOOK_ID);

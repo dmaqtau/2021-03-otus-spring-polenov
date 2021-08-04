@@ -1,5 +1,6 @@
-package ru.otus.spring.util;
+package ru.otus.spring.service;
 
+import org.springframework.stereotype.Component;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
@@ -7,8 +8,9 @@ import ru.otus.spring.exception.AuthorValidationException;
 import ru.otus.spring.exception.BookValidationException;
 import ru.otus.spring.exception.GenreValidationException;
 
-public class ValidationUtils {
-    public static void validateBook(Book book){
+@Component
+public class LibraryObjectValidator {
+    void validateBook(Book book){
         if(book == null){
             throw new BookValidationException("Передан пустой объект книги.");
         }
@@ -26,7 +28,7 @@ public class ValidationUtils {
         }
     }
 
-    public static void validateBookForUpdate(Book book){
+    void validateBookForUpdate(Book book){
         if(book == null){
             throw new BookValidationException("Передан пустой объект книги.");
         }
@@ -36,13 +38,13 @@ public class ValidationUtils {
         }
     }
 
-    public static void validateAuthor(Author author){
+    void validateAuthor(Author author){
         if(author.getId() <=0){
             throw new AuthorValidationException("Некорректный идентификатор автора: " + author.getId());
         }
     }
 
-    public static void validateGenre(Genre genre){
+    void validateGenre(Genre genre){
         if(genre.getId() <=0){
             throw new GenreValidationException("Некорректный идентификатор жанра: " + genre.getId());
         }

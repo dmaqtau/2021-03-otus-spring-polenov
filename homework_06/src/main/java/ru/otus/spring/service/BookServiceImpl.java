@@ -5,16 +5,17 @@ import ru.otus.spring.dao.BookDao;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.util.ValidationUtils;
 
 import java.util.List;
 
 @Service
 public class BookServiceImpl implements BookService {
     private final BookDao bookDao;
+    private final LibraryObjectValidator validator;
 
-    public BookServiceImpl(BookDao bookDao){
+    public BookServiceImpl(BookDao bookDao, LibraryObjectValidator validator){
         this.bookDao = bookDao;
+        this.validator = validator;
     }
 
     @Override
@@ -30,9 +31,9 @@ public class BookServiceImpl implements BookService {
                                 .build())
                 .build();
 
-        ValidationUtils.validateBook(book);
-        ValidationUtils.validateAuthor(book.getAuthor());
-        ValidationUtils.validateGenre(book.getGenre());
+        validator.validateBook(book);
+        validator.validateAuthor(book.getAuthor());
+        validator.validateGenre(book.getGenre());
         return bookDao.insert(book);
     }
 
@@ -55,23 +56,17 @@ public class BookServiceImpl implements BookService {
                 .id(id)
                 .bookName(bookName)
                 .description(bookDescription)
-                .author(authorId == 0L? null:
-                        Author.builder()
-                                .id(authorId)
-                                .build()
-                ).genre(genreId == 0L? null:
-                        Genre.builder()
-                                .id(genreId)
-                                .build())
+                .author(authorId == 0L? null: new Author(authorId))
+                .genre(genreId == 0L? null: new Genre(genreId))
                 .build();
-        ValidationUtils.validateBookForUpdate(book);
+        validator.validateBookForUpdate(book);
 
         if(book.getAuthor() != null){
-            ValidationUtils.validateAuthor(book.getAuthor());
+            validator.validateAuthor(book.getAuthor());
         }
 
         if(book.getGenre() != null){
-            ValidationUtils.validateGenre(book.getGenre());
+            validator.validateGenre(book.getGenre());
         }
         return bookDao.update(book);
     }

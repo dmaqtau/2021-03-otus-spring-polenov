@@ -1,20 +1,18 @@
 package ru.otus.spring.dao;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
-
-import java.util.List;
+import ru.otus.spring.exception.BookValidationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -37,6 +35,8 @@ class BookDaoJdbcTest {
 
     private static final Long EXISTING_GENRE_ID = 3L;
     private static final Long EXISTING_BOOK_ID = 4L;
+    private static final Long NOT_EXISTING_BOOK_ID = 4000L;
+
     private static final Integer EXPECTED_BOOKS_COUNT = 6;
     private static final String NEW_DESCRIPTION = "new_description";
 
@@ -46,10 +46,9 @@ class BookDaoJdbcTest {
     void shouldSuccessfullyInsertNewBook(){
         Book expectedBook = Book.builder()
                 .bookName(NEW_BOOK_NAME)
-                .author(Author.builder()
-                        .id(EXISTING_AUTHOR_ID).build())
+                .author(new Author(EXISTING_AUTHOR_ID))
                 .description(NEW_DESCRIPTION)
-                .genre(Genre.builder().id(EXISTING_GENRE_ID).build())
+                .genre(new Genre(EXISTING_GENRE_ID))
                 .build();
         Book actualBook = bookDao.insert(expectedBook);
 
@@ -91,11 +90,24 @@ class BookDaoJdbcTest {
         Book bookUpdateInfo = Book.builder()
                 .id(EXISTING_BOOK_ID)
                 .bookName(NEW_BOOK_NAME)
-                .author(Author.builder()
-                        .id(EXISTING_AUTHOR_ID).build())
+                .author(new Author(EXISTING_AUTHOR_ID))
                 .build();
         Book updatedBook = bookDao.update(bookUpdateInfo);
         assertAuthorInfo(updatedBook, true);
+
+        assertThat(updatedBook.getDescription()).isNull();
+    }
+
+    @Test
+    @DisplayName("Должны выбросить ошибку, если книги с таким идентификатором нет")
+    void shouldThrowIfUpdatingNotExistingId(){
+        Book bookUpdateInfo = Book.builder()
+                .id(NOT_EXISTING_BOOK_ID)
+                .bookName(NEW_BOOK_NAME)
+                .author(new Author(EXISTING_AUTHOR_ID))
+                .build();
+
+        assertThrows(BookValidationException.class, () -> bookDao.update(bookUpdateInfo));
     }
 
     @Test
@@ -107,8 +119,7 @@ class BookDaoJdbcTest {
         Book bookUpdateInfo = Book.builder()
                 .id(EXISTING_BOOK_ID)
                 .bookName(NEW_BOOK_NAME)
-                .author(Author.builder()
-                        .id(NOT_EXISTING_AUTHOR_ID).build())
+                .author(new Author(NOT_EXISTING_AUTHOR_ID))
                 .build();
 
         assertThrows(DataIntegrityViolationException.class, () -> bookDao.update(bookUpdateInfo));

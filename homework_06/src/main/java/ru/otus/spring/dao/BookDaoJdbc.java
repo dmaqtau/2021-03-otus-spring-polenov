@@ -1,5 +1,13 @@
 package ru.otus.spring.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,14 +20,6 @@ import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.exception.BookValidationException;
-import ru.otus.spring.util.ValidationUtils;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 @Repository
 public class BookDaoJdbc implements BookDao {
@@ -61,37 +61,37 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public Book update(Book book) {
-        Book existingBook = getById(book.getId());
-        if(existingBook == null){
+        if(!existsById(book.getId())){
             throw new BookValidationException("Не существует книга с идентификатором " + book.getId());
         }
 
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValues(Map.of("id", book.getId()));
+        parameterSource.addValues(getParamsMap("id", book.getId()));
 
         List<String> fieldUpdateStatements = new ArrayList<>();
 
         if(book.getGenre() != null){
             fieldUpdateStatements.add("genre_id = :genreId");
-            parameterSource.addValues(Map.of("genreId", book.getGenre().getId()));
+            parameterSource.addValues(getParamsMap("genreId", book.getGenre().getId()));
         }
         if(book.getAuthor() != null){
             fieldUpdateStatements.add("author_id = :authorId");
-            parameterSource.addValues(Map.of("authorId", book.getAuthor().getId()));
-        }
-        if(StringUtils.isNotBlank(book.getBookName())){
-            fieldUpdateStatements.add("book_name = :bookName");
-            parameterSource.addValues(Map.of("bookName", book.getBookName()));
+            parameterSource.addValues(getParamsMap("authorId", book.getAuthor().getId()));
         }
 
-        if(StringUtils.isNotBlank(book.getDescription())){
-            fieldUpdateStatements.add("description = :description");
-            parameterSource.addValues(Map.of("description", book.getDescription()));
+        if(StringUtils.isNotBlank(book.getBookName())){
+            fieldUpdateStatements.add("book_name = :bookName");
+            parameterSource.addValues(getParamsMap("bookName", book.getBookName()));
         }
+
+        // Поле обнуляемое
+        fieldUpdateStatements.add("description = :description");
+
+        parameterSource.addValues(getParamsMap("description", book.getDescription()));
 
         if(fieldUpdateStatements.isEmpty()){
             // Обновлять нечего, вернуть исходное состояние книги
-            return existingBook;
+            return book;
         }
 
         String sql = "update books set " +
@@ -114,8 +114,8 @@ public class BookDaoJdbc implements BookDao {
                             "LEFT JOIN genres g ON b.genre_id = g.id WHERE b.id = :id", params, new BooksMapper());
         } catch (EmptyResultDataAccessException e){
             // Книг по заданному идентификатору в БД нет.
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -135,6 +135,13 @@ public class BookDaoJdbc implements BookDao {
         return namedParameterJdbcOperations.update(
                 "delete from books where id = :id", params
         );
+    }
+
+    private boolean existsById(long id){
+        Map<String, Object> params = Collections.singletonMap("id", id);
+
+        String sql = "SELECT EXISTS (SELECT 1 FROM books WHERE id = :id)";
+        return namedParameterJdbcOperations.queryForObject(sql, params, Boolean.class);
     }
 
     private static class BooksMapper implements RowMapper<Book> {
@@ -160,5 +167,11 @@ public class BookDaoJdbc implements BookDao {
                     .genre(new Genre(genreId, genreName))
                     .build();
         }
+    }
+
+    private static Map<String, Object> getParamsMap(String key, Object value){
+        Map<String, Object> params = new HashMap<>();
+        params.put(key, value);
+        return params;
     }
 }

@@ -15,12 +15,4 @@ public class Book {
     private Author author;
     private Genre genre;
     private String description;
-
-    @Override
-    public String toString(){
-        return String.format(
-                "id = [%d],\nИмя = [%s],\nАвтор = [%s],\nЖанр = [%s],\nОписание = [%s]",
-                id, bookName, author.toString(), genre.toString(), description
-        );
-    }
 }

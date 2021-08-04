@@ -11,8 +11,7 @@ public class Genre {
     private long id;
     private String genreName;
 
-    @Override
-    public String toString(){
-        return genreName;
+    public Genre(long id){
+        this.id = id;
     }
 }

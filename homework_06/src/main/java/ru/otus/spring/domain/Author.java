@@ -14,11 +14,7 @@ public class Author {
     private String authorName;
     private String patronymic;
 
-    @Override
-    public String toString(){
-        if(patronymic == null){
-            return String.format("%s %s", surname, authorName);
-        }
-        return String.format("%s %s %s", surname, authorName, patronymic);
+    public Author(long id){
+        this.id = id;
     }
 }
