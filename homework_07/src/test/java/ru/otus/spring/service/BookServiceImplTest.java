@@ -78,8 +78,8 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Должны выдать ошибку при попытке поиска по некорректному идентификатору")
     void shouldFailOnGetByIncorrectId(){
-        assertThrows(IllegalArgumentException.class, () -> bookService.getByID(0));
-        assertThrows(IllegalArgumentException.class, () -> bookService.getByID(-1));
+        assertThrows(IllegalArgumentException.class, () -> bookService.findByID(0));
+        assertThrows(IllegalArgumentException.class, () -> bookService.findByID(-1));
     }
 
     @Test
@@ -105,7 +105,7 @@ class BookServiceImplTest {
         Book expectedBook = new Book(EXISTING_BOOK_ID, NEW_BOOK_NAME, new Author(EXISTING_AUTHOR_ID), new Genre(EXISTING_GENRE_ID), NEW_DESCRIPTION);
 
         given(bookRepository.findById(EXISTING_BOOK_ID)).willReturn(expectedBook);
-        Book actualBook = bookService.getByID(EXISTING_BOOK_ID);
+        Book actualBook = bookService.findByID(EXISTING_BOOK_ID);
 
         assertAll(
                 () -> verify(bookRepository).findById(EXISTING_BOOK_ID),

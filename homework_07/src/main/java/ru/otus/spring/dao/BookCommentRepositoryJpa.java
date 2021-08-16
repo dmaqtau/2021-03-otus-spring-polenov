@@ -33,9 +33,9 @@ public class BookCommentRepositoryJpa implements BookCommentRepository {
 
     @Override
     public List<BookComment> findByBookId(long bookId) {
-        TypedQuery<BookComment> query = em.createQuery("select b " +
-                "from BookComment b " +
-                "where b.book.id = :bookId", BookComment.class);
+        TypedQuery<BookComment> query = em.createQuery("select c " +
+                "from BookComment c join fetch c.book " +
+                "where c.book.id = :bookId", BookComment.class);
         query.setParameter("bookId", bookId);
 
         try{

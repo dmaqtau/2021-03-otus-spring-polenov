@@ -72,7 +72,6 @@ class BookRepositoryTest {
                 () -> assertThat(actualBook).isNotNull(),
                 () -> assertThat(actualBook.getAuthor()).isNotNull(),
                 () -> assertThat(actualBook.getGenre()).isNotNull(),
-                () -> assertThat(actualBook.getComments()).hasSize(EXPECTED_COMMENTS_SIZE),
                 () -> assertThat(actualBook.getName()).isNotNull(),
                 () -> assertThat(actualBook.getDescription()).isNotNull(),
                 () -> assertThat(actualBook.getId()).isPositive()
@@ -84,9 +83,6 @@ class BookRepositoryTest {
     void shouldSuccessfullyUpdateExistingBook(){
         Book existingBook = bookRepository.findById(EXISTING_BOOK_ID);
         assertAuthorInfo(existingBook, true);
-        assertThat(existingBook.getComments()).hasSize(EXPECTED_COMMENTS_SIZE);
-
-        existingBook.getComments().remove(0);
 
         existingBook.setGenre(null);
         existingBook.setDescription("test");
@@ -98,8 +94,7 @@ class BookRepositoryTest {
         assertAll(
                 () -> assertAuthorInfo(updatedBook, false),
                 () -> assertThat(updatedBook.getDescription()).isEqualTo("test"),
-                () -> assertThat(updatedBook.getGenre()).isNull(),
-                () -> assertThat(updatedBook.getComments()).hasSize(3)
+                () -> assertThat(updatedBook.getGenre()).isNull()
         );
     }
 
@@ -144,8 +139,7 @@ class BookRepositoryTest {
     @Test
     @DisplayName("Должны удалить комментарии к книге вместе с книгой")
     void shouldDeleteBothBookAndComments(){
-        Book actualBook = bookRepository.findById(EXISTING_BOOK_ID);
-        assertThat(actualBook.getComments()).hasSize(EXPECTED_COMMENTS_SIZE);
+        Book actualBook = bookRepository.findById(EXISTING_BOOK_ID);;
 
         List<BookComment> commentsBefore = bookCommentRepository.findByBookId(EXISTING_BOOK_ID);
         assertThat(commentsBefore).hasSize(EXPECTED_COMMENTS_SIZE);

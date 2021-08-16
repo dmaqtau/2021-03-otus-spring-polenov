@@ -41,7 +41,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Book getByID(long id) {
+    public Book findByID(long id) {
         if(id <= 0){
             throw new IllegalArgumentException("Некорректный идентификатор для поиска книги: " + id);
         }
@@ -81,7 +81,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookComment> getComments(long bookId) {
+    @Transactional(readOnly = true)
+    public List<BookComment> findComments(long bookId) {
         checkBookExists(bookId);
         return commentRepository.findByBookId(bookId);
     }
@@ -105,8 +106,11 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteCommentByBookId(long bookId) {
-        Book book = bookRepository.findById(bookId);
-        if(CollectionUtils.isEmpty(book.getComments())){
+        checkBookExists(bookId);
+
+        List<BookComment> comments = commentRepository.findByBookId(bookId);
+
+        if(CollectionUtils.isEmpty(comments)){
             throw new CommentValidationException("У книги с идентификатором " + bookId + " нет комментариев.");
         }
         commentRepository.deleteByBookId(bookId);
@@ -114,14 +118,14 @@ public class BookServiceImpl implements BookService {
 
     private void checkBookExists(long bookId){
         if(!bookRepository.isExistsById(bookId)){
-            throw new BookValidationException("Не найдена книга по идентификатору: " + bookId);
+            throw new BookValidationException(getNoBookFoundMessage(bookId));
         }
     }
 
     private Book getBookForUpdate(long bookId, String bookName, String bookDescription, long authorId, long genreId){
         Book existingBook = bookRepository.findById(bookId);
         if(existingBook == null){
-            throw new BookValidationException("Не найдена книга по идентификатору: " + bookId);
+            throw new BookValidationException(getNoBookFoundMessage(bookId));
         }
 
         if(authorId > 0){
@@ -160,5 +164,9 @@ public class BookServiceImpl implements BookService {
             }
         }
         return new Book(bookName, author, genre, bookDescription);
+    }
+    
+    private static String getNoBookFoundMessage(long bookId){
+        return "Не найдена книга по идентификатору: " + bookId;
     }
 }

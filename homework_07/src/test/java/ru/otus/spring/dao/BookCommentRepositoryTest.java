@@ -39,10 +39,12 @@ class BookCommentRepositoryTest {
     @DisplayName("Должны сохранить новый комментарий для книги")
     void shouldSaveNew(){
         Book existingBook = bookRepository.findById(EXISTING_BOOK_ID);
-        assertThat(existingBook.getComments()).hasSize(EXPECTED_COMMENTS_COUNT);
+        List<BookComment>  comments = commentRepository.findByBookId(EXISTING_BOOK_ID);
+
+        assertThat(comments).hasSize(EXPECTED_COMMENTS_COUNT);
 
         commentRepository.save("test_user", "test_comment", EXISTING_BOOK_ID);
-        List<BookComment> comments = commentRepository.findByBookId(EXISTING_BOOK_ID);
+        comments = commentRepository.findByBookId(EXISTING_BOOK_ID);
 
         assertThat(comments).hasSize(EXPECTED_COMMENTS_COUNT + 1);
         comments.forEach(c -> assertThat(c.getBook().getId() == EXISTING_BOOK_ID));

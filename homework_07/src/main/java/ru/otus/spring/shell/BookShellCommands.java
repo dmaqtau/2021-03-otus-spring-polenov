@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.util.CollectionUtils;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.BookComment;
@@ -96,7 +95,7 @@ public class BookShellCommands {
     @ShellMethod(key = "getById", value = "Get single book by id")
     String getById(@ShellOption({"--id", "-I"}) long id){
         try{
-            Book book =  bookService.getByID(id);
+            Book book =  bookService.findByID(id);
             if(book == null){
                 return String.format(NOT_FOUND_BOOK_BY_ID, id);
             }
@@ -109,7 +108,7 @@ public class BookShellCommands {
     @ShellMethod(key = "getComments", value = "Get comments for book")
     String getComments(@ShellOption({"--bookId", "-I"}) long bookId){
         try{
-            List<BookComment> comments = bookService.getComments(bookId);
+            List<BookComment> comments = bookService.findComments(bookId);
             return String.format(FOUND_COMMENTS_FOR_BOOK, bookId, getCommentInfo(comments));
         } catch (Exception e){
             return FAILED_TO_GET_BOOK_COMMENTS + e.getLocalizedMessage();
@@ -151,11 +150,10 @@ public class BookShellCommands {
     
     static String getBookInfo(Book book){
         return String.format(
-                "id = [%d],\nИмя = [%s],\nАвтор = [%s],\nЖанр = [%s],\nОписание = [%s], \nКомментарии = (%d шт)",
+                "id = [%d],\nИмя = [%s],\nАвтор = [%s],\nЖанр = [%s],\nОписание = [%s]",
                 book.getId(), book.getName(),
                 getAuthorInfo(book.getAuthor()), book.getGenre().getName(),
-                getEmptyStrIfBlank(book.getDescription()),
-                CollectionUtils.isEmpty(book.getComments()) ? 0: book.getComments().size()
+                getEmptyStrIfBlank(book.getDescription())
         );
     }
 

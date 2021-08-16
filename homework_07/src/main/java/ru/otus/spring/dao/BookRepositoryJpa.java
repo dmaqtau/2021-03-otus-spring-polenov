@@ -1,7 +1,6 @@
 package ru.otus.spring.dao;
 
 import java.util.List;
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -36,9 +35,10 @@ public class BookRepositoryJpa implements BookRepository {
 
     @Override
     public Book findById(long id) {
-        TypedQuery<Book> query = em.createQuery("select b " +
-                        "from Book b " +
-                        "where b.id = :id", Book.class);
+        TypedQuery<Book> query = em.createQuery("select b from Book b " +
+                "join fetch b.author " +
+                "join fetch b.genre " +
+                "where b.id = :id", Book.class);
         query.setParameter("id", id);
 
         try{
@@ -50,12 +50,9 @@ public class BookRepositoryJpa implements BookRepository {
 
     @Override
     public List<Book> findAll() {
-        EntityGraph<?> entityGraph = em.getEntityGraph("books-entity-graph");
         TypedQuery<Book> query = em.createQuery("select b from Book b " +
                 "join fetch b.author " +
-                "join fetch b.genre " +
-                "left join fetch b.comments", Book.class);
-        query.setHint("javax.persistence.fetchgraph", entityGraph);
+                "join fetch b.genre", Book.class);
         return query.getResultList();
     }
 

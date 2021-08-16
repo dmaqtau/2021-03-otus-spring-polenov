@@ -110,23 +110,23 @@ class BookShellCommandsTest {
         Genre genre = new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME);
         Book existingBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, author, genre, EXISTING_DESCRIPTION);
 
-        given(bookService.getByID(anyLong())).willReturn(existingBook);
+        given(bookService.findByID(anyLong())).willReturn(existingBook);
         String result = bookShellCommands.getById(EXISTING_BOOK_ID);
-        verify(bookService).getByID(EXISTING_BOOK_ID);
+        verify(bookService).findByID(EXISTING_BOOK_ID);
         assertThat(result).contains(String.format(BookShellCommands.FOUND_BOOK_BY_ID, EXISTING_BOOK_ID,  getBookInfo(existingBook)));
 
-        given(bookService.getByID(anyLong())).willReturn(null);
+        given(bookService.findByID(anyLong())).willReturn(null);
         result = bookShellCommands.getById(NOT_EXISTING_BOOK_ID);
-        verify(bookService).getByID(NOT_EXISTING_BOOK_ID);
+        verify(bookService).findByID(NOT_EXISTING_BOOK_ID);
         assertThat(result).contains(String.format(BookShellCommands.NOT_FOUND_BOOK_BY_ID, NOT_EXISTING_BOOK_ID));
     }
 
     @Test
     @DisplayName("Должны отобразить сообщение об ошибке при получении книги по идентификатору")
     void shouldShowErrMsgOnGetBookByIdException(){
-        given(bookService.getByID(anyLong())).willThrow(RuntimeException.class);
+        given(bookService.findByID(anyLong())).willThrow(RuntimeException.class);
         String result = bookShellCommands.getById(NOT_EXISTING_BOOK_ID);
-        verify(bookService).getByID(NOT_EXISTING_BOOK_ID);
+        verify(bookService).findByID(NOT_EXISTING_BOOK_ID);
         assertThat(result).contains(BookShellCommands.FAILED_TO_GET_BY_ID);
     }
 
@@ -137,7 +137,7 @@ class BookShellCommandsTest {
         BookComment firstComment = new BookComment(1, existingBook, "testLogin1", "");
         BookComment secondComment = new BookComment(2, existingBook, "testLogin2", "");
 
-        given(bookService.getComments(anyLong())).willReturn(List.of(firstComment, secondComment));
+        given(bookService.findComments(anyLong())).willReturn(List.of(firstComment, secondComment));
         String result = bookShellCommands.getComments(EXISTING_BOOK_ID);
 
         assertThat(result)
