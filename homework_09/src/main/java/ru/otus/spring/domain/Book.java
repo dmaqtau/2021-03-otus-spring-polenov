@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +23,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "books")
+@NamedEntityGraph(name = "bookWithAuthorAndGenre",
+        attributeNodes = {@NamedAttributeNode("author"), @NamedAttributeNode("genre")}
+)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
