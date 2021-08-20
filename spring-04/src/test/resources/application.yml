@@ -1,0 +1,38 @@
+questionfile:
+  template: test_questions_junit
+
+question:
+  column:
+    index: 0
+  ask:
+    qty: 4
+  first:
+    column:
+      index: 2
+
+answer:
+  column:
+    index: 1
+  qualify:
+    qty: 3
+
+csv:
+  delimiter: "["
+
+spring:
+  messages:
+    basename: i18n/messages
+    encoding: windows-1251
+
+
+  shell:
+    interactive:
+      enabled: false
+    script:
+      spring:
+        shell:
+          script: false
+
+locale:
+  default:
+
