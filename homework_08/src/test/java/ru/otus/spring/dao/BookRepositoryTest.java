@@ -113,6 +113,7 @@ class BookRepositoryTest {
         assertThat(allBooksActual)
                 .hasSize(EXPECTED_BOOKS_COUNT.intValue())
                 .doesNotContainNull();
+        assertThat(allBooksActual).allMatch(b -> b.getAuthor() != null && b.getGenre() != null);
     }
 
     @Test
