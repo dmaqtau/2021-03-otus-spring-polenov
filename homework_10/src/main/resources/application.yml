@@ -10,7 +10,7 @@ spring:
     hibernate:
       ddl-auto: none
 
-    show-sql: false
+    show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
 
   h2:
@@ -26,3 +26,5 @@ spring:
       spring:
         shell:
           script: false
+api:
+  book.path: /api/book/**

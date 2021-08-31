@@ -9,4 +9,14 @@ public class PageController {
     public String aboutPage(){
         return "about";
     }
+
+    @GetMapping("/not_authorized")
+    public String notAuthorized(){
+        return "not_authorized";
+    }
+
+    @GetMapping("/admin")
+    public String admin(){
+        return "admin";
+    }
 }

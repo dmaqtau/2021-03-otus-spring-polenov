@@ -50,13 +50,13 @@ public class BookController {
         bookService.deleteByID(id);
     }
 
-    @ExceptionHandler({NotFoundException.class})
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorNotification> handleNotFound(NotFoundException e) {
         final HttpStatus responseStatus = HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(new ErrorNotification(responseStatus.getReasonPhrase(), e.getLocalizedMessage()), responseStatus);
     }
 
-    @ExceptionHandler({InvalidInputException.class})
+    @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorNotification> handleInvalid(InvalidInputException e) {
         final HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new ErrorNotification(responseStatus.getReasonPhrase(), e.getLocalizedMessage()), responseStatus);

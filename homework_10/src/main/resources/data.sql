@@ -25,3 +25,9 @@ INSERT INTO book_comments (id, book_id, user_login, comment) VALUES (7, 3, 'user
 INSERT INTO library_users (id, user_login, password, is_active) VALUES (1, 'director', '$2a$10$wQcUhlu1q8brE2zFv8fBxu/l/vTXRWrz.qCzPWEMX./6nhHBxsCKe', true);       -- Исходное значение пароля: 'pepper'
 INSERT INTO library_users (id, user_login, password, is_active) VALUES (2, 'worker2000', '$2a$10$cOtOBzl57tw8hnWieKdhOOn5O8bE1MLA6J6EtX7Q1hOJFD7ILz/LW', true);     -- Исходное значение пароля: 'pepper1'
 INSERT INTO library_users (id, user_login, password, is_active) VALUES (3, 'worker3000', '$2a$10$.KMFPtm9ErpROse9SNtOPuxAQVHPhtZfNuz.kfJUlp0Qc0msKBR9.', false);    -- Исходное значение пароля: 'pepper2'. Юзер неактивный.
+INSERT INTO library_users (id, user_login, password, is_active) VALUES (4, 'worker3001', '$2a$10$.KMFPtm9ErpROse9SNtOPuxAQVHPhtZfNuz.kfJUlp0Qc0msKBR9.', true);     -- Исходное значение пароля: 'pepper2'
+
+INSERT INTO library_user_roles (id, user_id, role_name) VALUES (1, 1, 'ADMIN');
+INSERT INTO library_user_roles (id, user_id, role_name) VALUES (2, 2, 'MANAGER');
+INSERT INTO library_user_roles (id, user_id, role_name) VALUES (3, 3, 'USER');
+INSERT INTO library_user_roles (id, user_id, role_name) VALUES (4, 4, 'USER');
