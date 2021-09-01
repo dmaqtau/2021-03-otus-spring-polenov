@@ -55,7 +55,7 @@ class BookCommentServiceImplTest {
         BookComment savedComment = bookCommentCaptor.getValue();
         assertAll(
                 () -> assertThat(savedComment).isNotNull(),
-                () -> assertThat(savedComment.getId()).isPositive(),
+                () -> assertThat(savedComment.getId()).isZero(),
                 () -> assertThat(savedComment.getUserLogin()).isEqualTo(dto.getUserLogin()),
                 () -> assertThat(savedComment.getComment()).isEqualTo(dto.getComment()),
                 () -> assertThat(savedComment.getBook().getId()).isEqualTo(EXISTING_BOOK_ID)

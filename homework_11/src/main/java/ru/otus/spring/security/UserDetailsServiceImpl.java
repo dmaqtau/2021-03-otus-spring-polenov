@@ -13,15 +13,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.dao.LibraryUserReporitory;
-import ru.otus.spring.dao.LibraryUserRoleRepository;
 import ru.otus.spring.domain.LibraryUser;
 
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final LibraryUserReporitory userRepository;
-    private final LibraryUserRoleRepository roleRepository;
-
     private static final String ROLE_PREFIX = "ROLE_";
 
     @Override
