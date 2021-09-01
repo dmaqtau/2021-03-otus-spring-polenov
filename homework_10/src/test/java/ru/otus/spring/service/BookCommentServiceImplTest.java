@@ -7,7 +7,6 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ru.otus.spring.dao.BookCommentRepository;
 import ru.otus.spring.domain.BookComment;
 import ru.otus.spring.dto.BookCommentDTO;
@@ -104,18 +103,5 @@ class BookCommentServiceImplTest {
     void shouldThrowOnDeletingCommentsWithInvalidBookID(){
         doThrow(new BookValidationException("ex")).when(bookService).checkBookExists(INVALID_BOOK_ID);
         assertThrows(BookValidationException.class, () -> commentService.deleteCommentsByBookId(INVALID_BOOK_ID));
-    }
-
-    @Test
-    void testGeneratePass(){
-        int i = 0;
-        while (i < 10) {
-            String password = "pepper2";
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String hashedPassword = passwordEncoder.encode(password);
-
-            System.out.println(hashedPassword);
-            i++;
-        }
     }
 }

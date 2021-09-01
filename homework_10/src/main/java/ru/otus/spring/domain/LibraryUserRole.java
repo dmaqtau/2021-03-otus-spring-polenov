@@ -2,7 +2,6 @@ package ru.otus.spring.domain;
 
 import java.io.Serializable;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,8 +11,6 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.otus.spring.security.UserRole;
-import ru.otus.spring.util.UserRoleConverter;
 
 @Data
 @Entity
@@ -28,7 +25,6 @@ public class LibraryUserRole implements Serializable {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Convert(converter = UserRoleConverter.class)
     @Column(name = "role_name", nullable = false)
-    private UserRole role;
+    private String role;
 }

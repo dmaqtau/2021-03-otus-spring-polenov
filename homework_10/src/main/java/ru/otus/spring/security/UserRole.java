@@ -1,22 +1,11 @@
 package ru.otus.spring.security;
 
-import java.util.stream.Stream;
+public class UserRole {
+    public static final String ADMIN = "ADMIN";
+    public static final String USER = "USER";
+    public static final String MANAGER = "MANAGER";
 
-import lombok.Getter;
-
-@Getter
-public enum UserRole {
-    ADMIN("ADMIN"),
-    USER("USER"),
-    MANAGER("MANAGER");
-
-    String name;
-
-    UserRole(String name){
-        this.name = name;
-    }
-
-    public static UserRole getByName(String name){
-        return Stream.of(UserRole.values()).filter(r -> r.getName().equals(name)).findAny().orElse(null);
+    private UserRole(){
+        // Private constructor
     }
 }

@@ -20,8 +20,6 @@ public class TestSpringSecurityConfig {
 
     public static final String ACTIVE_USER_PASS = "pepper";
     public static final String INACTIVE_USER_PASS = "pepper1";
-    public static final String MANAGER_PASS = "pepper2";
-    public static final String COMMON_USER_PASS = "pepper3";
 
     private static final String ACTIVE_USER_PASS_HASHED = "$2a$10$wQcUhlu1q8brE2zFv8fBxu/l/vTXRWrz.qCzPWEMX./6nhHBxsCKe";       // Исходный пароль: 'pepper'
     private static final String INACTIVE_USER_PASS_HASHED = "$2a$10$cOtOBzl57tw8hnWieKdhOOn5O8bE1MLA6J6EtX7Q1hOJFD7ILz/LW";     // Исходный пароль: 'pepper1'
@@ -33,16 +31,16 @@ public class TestSpringSecurityConfig {
     public UserDetailsService testUserDetailsService(){
         User activeUser = new User(
                 ADMIN_LOGIN, ACTIVE_USER_PASS_HASHED, true, true, true, true,
-                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.ADMIN.getName())));
+                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.ADMIN)));
         User inactiveUser = new User(
                 INACTIVE_USER_LOGIN, INACTIVE_USER_PASS_HASHED, false, true, true, true,
-                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.ADMIN.getName())));
+                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.ADMIN)));
         User manager = new User(
                 MANAGER_LOGIN, MANAGER_USER_PASS_HASHED, true, true, true, true,
-                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.MANAGER.getName())));
+                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.MANAGER)));
         User commonUser = new User(
                 COMMON_USER_LOGIN, COMMON_USER_PASS_HASHED, true, true, true, true,
-                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.USER.getName())));
+                List.of(new SimpleGrantedAuthority("ROLE_" + UserRole.USER)));
         return new InMemoryUserDetailsManager(List.of(activeUser, inactiveUser, manager, commonUser));
     }
 }

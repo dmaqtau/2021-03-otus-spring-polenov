@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.stubbing.Answer;
@@ -22,7 +21,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -47,14 +45,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.otus.spring.config.TestSpringSecurityConfig.ADMIN_LOGIN;
 import static ru.otus.spring.config.TestSpringSecurityConfig.ACTIVE_USER_PASS;
+import static ru.otus.spring.config.TestSpringSecurityConfig.ADMIN_LOGIN;
 import static ru.otus.spring.config.TestSpringSecurityConfig.INACTIVE_USER_LOGIN;
 import static ru.otus.spring.config.TestSpringSecurityConfig.INACTIVE_USER_PASS;
 
 @DisplayName("Тесты аутентификации")
 @Import({TestSpringSecurityConfig.class})
-@ExtendWith(SpringExtension.class)
 @WebMvcTest({PageController.class, BookController.class})
 class AuthenticationTest {
     @Autowired
