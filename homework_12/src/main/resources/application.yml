@@ -1,0 +1,19 @@
+shipfactory:
+ assembly.duration: 1000
+ retry:
+  maxcount: 5
+  period: 1500
+
+warehouse:
+ initialstock:
+  iron: 30
+  module: 15
+  fuel: 20
+
+ theft.factor: 2
+
+generator:
+ ships: 5
+ iron: 7
+ module: 4
+ fuel: 4
