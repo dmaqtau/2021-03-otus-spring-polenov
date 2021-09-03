@@ -1,0 +1,6 @@
+ru\otus\spring\dao\PersonDaoSimple.class
+ru\otus\spring\service\PersonService.class
+ru\otus\spring\Main.class
+ru\otus\spring\domain\Person.class
+ru\otus\spring\dao\PersonDao.class
+ru\otus\spring\service\PersonServiceImpl.class
